@@ -38,6 +38,14 @@ h1{font-size:21px;line-height:1.1;margin:0}header p{margin:4px 0 0;color:var(--m
 .useGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.useItem{padding:9px 10px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);font-size:11px;color:var(--text)}
 .privacy{margin-top:16px;padding:14px 16px;border-radius:16px;border:1px solid rgba(67,212,155,.28);background:rgba(67,212,155,.06);color:var(--muted);font-size:11px;line-height:1.55}.privacy b{color:var(--good)}
 @media(max-width:760px){.hero{padding:20px 16px;border-radius:19px}.heroLead{font-size:14px}.infoGrid{grid-template-columns:1fr}.infoCard{padding:15px}}
+.helpCard{width:min(760px,100%);max-height:min(88vh,900px);display:flex;flex-direction:column}
+.helpBody{overflow:auto;padding:16px 18px}
+.helpStep{padding:12px 0;border-bottom:1px solid var(--line)}
+.helpStep b{font-size:13px}
+.helpStep p{margin:5px 0 0;font-size:12px;line-height:1.55;color:var(--muted)}
+.helpNote{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);font-size:12px;line-height:1.5}
+.heroActions{flex-wrap:wrap}
+.heroBtn{display:inline-flex;align-items:center;justify-content:center}
 </style></head><body>
 <script>
 /**
@@ -99,25 +107,60 @@ h1{font-size:21px;line-height:1.1;margin:0}header p{margin:4px 0 0;color:var(--m
   <p class="heroLead">A visual PDF workspace for precise cropping and print-ready layouts — with your document processed directly in your browser.</p>
   <div class="heroActions">
     <a class="primary heroBtn" href="#source">Start Processing →</a>
+    <button class="secondary heroBtn" id="learnBtn" type="button">📖 Learn How to Use This Tool</button>
     <span class="hint">No installation • No account</span>
   </div>
   <div class="heroPoints">
     <span class="heroPoint">🔒 PDF stays on your device</span>
     <span class="heroPoint">✂️ Live visual crop handles</span>
-    <span class="heroPoint">📄 A5 landscape output</span>
+    <span class="heroPoint">📄 A5 / A4 print-ready output</span>
     <span class="heroPoint">⚡ No OCR / no text reconstruction</span>
   </div>
 </div>
 <div class="grid"><section>
-<div class="card" id="source"><h2>1 · Source document</h2><div id="drop" class="drop"><strong>Choose your PDF</strong><span id="fileText">Nothing has been loaded.</span><button id="choose" class="primary">Select PDF</button><div id="readStepsNotice" class="notice" style="margin:12px 0"><b>Before you start:</b> Please read the quick steps below first — especially the difference between the Main Section and Additional Section.</div><input id="file" type="file" accept="application/pdf" hidden></div><div class="hint" style="margin-top:8px"><b>Maximum PDF size: 75 MB</b> · For best performance, use PDFs under 50 MB.</div><div class="stats"><div class="stat"><small>Source pages</small><b id="pages">—</b></div><div class="stat"><small>Selected pages</small><b id="selectedCount">—</b></div></div></div>
+<div class="card" id="source"><h2>1 · Source document</h2><div id="drop" class="drop"><strong>Choose your PDF</strong><span id="fileText">Nothing has been loaded.</span><button id="choose" class="primary">Select PDF</button><input id="file" type="file" accept="application/pdf" hidden></div><div class="hint" style="margin-top:8px"><b>Maximum PDF size: 75 MB</b> · For best performance, use PDFs under 50 MB.</div><div class="stats"><div class="stat"><small>Source pages</small><b id="pages">—</b></div><div class="stat"><small>Selected pages</small><b id="selectedCount">—</b></div></div></div>
 <div class="card"><h2>2 · Pages to process</h2><label>Select pages / ranges</label><input id="pageSelect" class="text" type="text" placeholder="Example: 2,5,8-12,15"><div class="hint">Leave empty for all pages. Supports individual pages, ranges and mixtures.</div><div class="row wrap" style="margin-top:9px"><button id="allPages" class="secondary" style="padding:10px 13px">All pages</button><button id="clearPages" class="secondary" style="padding:10px 13px">Clear</button></div><div id="pageStatus" class="hint" style="margin-top:8px">Load a PDF first.</div></div>
-<div class="card"><h2>3 · Crop type</h2>
-<div class="a5note"><b>Two independent crop boxes</b><br>Box 1 is the upper/primary crop. Box 2 is optional for the lower section. Each box has four independent boundaries. Drag the four handles directly on the PDF.</div>
-<div class="cropBox" id="box1Panel"><div class="cropBoxHead"><div><div class="cropTitle">Main Section · Primary Crop</div><div class="cropSub">Always included • adjust this section page-by-page or reuse it across pages</div></div><label class="switchline"><input id="same1" type="checkbox"> Same Main Section on every page</label></div><div class="cropInfo"><div class="stat"><small>Width</small><b id="b1WH">—</b></div><div class="stat"><small>Height</small><b id="b1HH">—</b></div></div></div>
-<div class="cropBox" id="box2Panel"><div class="cropBoxHead"><div><div class="cropTitle">Additional Section · Optional Crop</div><div class="cropSub">Optional • use for a second section; if reused across pages, only one copy is exported</div></div><label class="switchline"><input id="enable2" type="checkbox"> Use Box 2</label></div><div id="box2Controls" class="cropDisabled"><div class="cropBoxHead" style="margin-top:10px"><div></div><label class="switchline"><input id="same2" type="checkbox"> Same Additional Section on every page</label></div><div class="cropInfo"><div class="stat"><small>Width</small><b id="b2WH">—</b></div><div class="stat"><small>Height</small><b id="b2HH">—</b></div></div></div></div>
-<div class="cropHint">Drag the four handles directly on the PDF to define each crop. The Main Section and Additional Section are independent. Each has its own “same on every page” setting, so one can be reused across pages while the other remains page-specific. If the Additional Section is reused across pages, only one copy is added to the final PDF.</div>
+<div class="card"><h2>3 · Crop & layout</h2>
+<div class="a5note"><b>Two independent crop sections</b><br><b>Main Section</b> is the primary section and is always included. <b>Additional Section</b> is optional. Drag the four handles directly on the PDF to mark the exact area you want.</div>
+
+<div class="cropBox" id="box1Panel">
+  <div class="cropBoxHead">
+    <div><div class="cropTitle">Main Section</div><div class="cropSub">The primary section — always included in the final PDF.</div></div>
+    <label class="switchline"><input id="same1" type="checkbox"> Use same crop size for every page</label>
+  </div>
+  <div class="hint" style="margin-top:8px"><b>What this means:</b> Turn this on when the Main Section is in the same position and has the same size on every selected page. Turn it off if different pages need different crop boundaries.</div>
+  <div class="cropInfo"><div class="stat"><small>Width</small><b id="b1WH">—</b></div><div class="stat"><small>Height</small><b id="b1HH">—</b></div></div>
 </div>
-<div class="card"><h2>4 · Final PDF</h2><div class="a5note"><b>A5 Landscape — fixed output</b><br>Every exported page is exactly A5 landscape (210 × 148 mm), with zero margins. The selected crop is enlarged as much as possible without stretching. Any unused area remains plain white.</div><div class="control"><label class="radio"><input id="orderInfo" type="checkbox" checked><div><b>Main Section first, then Additional Section</b><small>If the Additional Section is enabled, it follows the Main Section. If “Same Additional Section on every page” is enabled, only one copy is added.</small></div></label></div></div>
+
+<div class="cropBox" id="box2Panel">
+  <div class="cropBoxHead">
+    <div><div class="cropTitle">Additional Section (Optional)</div><div class="cropSub">A second, separate section you may want to keep.</div></div>
+    <label class="switchline"><input id="enable2" type="checkbox"> Add Additional Section</label>
+  </div>
+  <div id="box2Controls" class="cropDisabled">
+    <div class="hint" style="margin-top:8px"><b>Choose how the Additional Section is handled:</b></div>
+    <div class="cropBoxHead" style="margin-top:8px">
+      <div></div>
+      <label class="switchline"><input id="same2" type="checkbox"> Is this cropped section identical for every page?</label>
+    </div>
+    <div class="hint" style="margin-top:7px">
+      <b>Yes:</b> the same Additional Section is taken once and placed on one A4 page, ready for repeated printing.<br>
+      <b>No:</b> each page can have its own Additional Section, and each one is given as an individual A5 page.
+    </div>
+    <div class="cropInfo"><div class="stat"><small>Width</small><b id="b2WH">—</b></div><div class="stat"><small>Height</small><b id="b2HH">—</b></div></div>
+  </div>
+</div>
+
+<div class="cropHint"><b>How to crop:</b> Look at the PDF preview and drag the four circular handles — left, right, top and bottom. The crop is taken exactly from the area inside the handles. Main Section and Additional Section are controlled independently.</div>
+</div>
+
+<div class="card"><h2>4 · Output order</h2>
+<div class="control" style="margin-top:0;padding-top:0;border-top:0">
+  <label class="radio"><input id="orderInfo" type="checkbox" checked><div><b>Main Section first, then Additional Section</b><small>When the Additional Section is enabled, its output is placed after the Main Section. Turn this off only if you prefer the reverse order.</small></div></label>
+</div>
+<div class="hint" style="margin-top:10px"><b>Output sizes:</b> Main Section pages are A5 landscape. If the Additional Section is set to “Yes”, its one shared copy is placed on an A4 page. If set to “No”, Additional Section crops are individual A5 pages.</div>
+</div>
+
 <div class="card"><h2>5 · Export & review</h2><button id="export" class="primary" style="width:100%">Generate & Review PDF</button><div class="progress"><div id="bar" class="bar"></div></div><div id="status" class="hint" style="margin-top:7px">Load a PDF to begin.</div></div>
 </section>
 <section class="card preview"><div class="toolbar"><div><h2 style="margin:0">Visual editor</h2><div class="hint" style="margin-top:3px">Source page <b id="pageNo">—</b> • Crop boundaries shown below</div></div><div class="row"><button class="secondary" id="prev" style="padding:10px 13px">‹</button><span class="badge" id="zoomRead">Fit</span><button class="secondary" id="next" style="padding:10px 13px">›</button></div></div><div class="stage" id="stage"><div style="text-align:center;color:#9aa5b5"><b>Load your PDF</b><br><small>The source file never leaves this device.</small></div></div><div class="hint" style="margin-top:10px">Safety: no OCR, no text reconstruction, no upload. The original PDF page content is cropped and placed locally.</div></section>
@@ -127,14 +170,14 @@ h1{font-size:21px;line-height:1.1;margin:0}header p{margin:4px 0 0;color:var(--m
     <h3>How it works</h3>
     <div class="steps">
       <div class="step"><div class="stepNo">1</div><div><b>Upload PDF</b><span>Select your document from your device.</span></div></div>
-      <div class="step"><div class="stepNo">2</div><div><b>Select & crop</b><span>Choose pages and adjust the Main Section and optional Additional Section directly on the PDF.</span></div></div>
+      <div class="step"><div class="stepNo">2</div><div><b>Select & crop</b><span>Choose pages and adjust the boxes directly on the PDF.</span></div></div>
       <div class="step"><div class="stepNo">3</div><div><b>Preview</b><span>Review the generated pages before saving.</span></div></div>
       <div class="step"><div class="stepNo">4</div><div><b>Download</b><span>Save the finished PDF to your device.</span></div></div>
     </div>
   </div>
   <div class="infoCard">
-    <p style="margin-top:10px"><b>Useful for schools:</b> Quickly prepare uneven or unstructured admit cards, registration certificates, certificates and similar documents by selecting the sections you actually need.</p><h3>Useful for</h3>
-    <p>Designed for everyday PDF preparation and print-layout tasks.</p>
+    <h3>Useful for</h3>
+    <p>Especially useful for schools and institutions that receive or create uneven, differently arranged, or unstructured admit cards, registration certificates and other documents that need to be cleaned up for printing.</p>
     <div class="useGrid">
       <div class="useItem">📑 Admit cards</div><div class="useItem">🎓 Certificates</div>
       <div class="useItem">📚 Study materials</div><div class="useItem">🖨️ Print layouts</div>
@@ -148,11 +191,30 @@ h1{font-size:21px;line-height:1.1;margin:0}header p{margin:4px 0 0;color:var(--m
   </div>
 </div>
 <div class="hint" style="text-align:center;margin-top:14px">Ujjal's PDF Factory • Browser-based PDF workspace • No account required</div></div>
+<div id="helpModal" class="modal" aria-hidden="true">
+  <div class="modalBox helpCard">
+    <div class="modalHead">
+      <div><b>How to Use Ujjal's PDF Factory</b><div class="hint">Simple step-by-step guide</div></div>
+      <button id="helpClose" class="secondary" style="padding:10px 13px" type="button">Close</button>
+    </div>
+    <div class="helpBody">
+      <div class="helpStep"><b>1. Upload your PDF</b><p>Choose the PDF from your device. Your file is processed locally in your browser. Maximum size is 75 MB.</p></div>
+      <div class="helpStep"><b>2. Choose the pages</b><p>Enter page numbers or ranges, such as <b>2,5,8-12</b>. Leave it empty to use all pages.</p></div>
+      <div class="helpStep"><b>3. Mark the Main Section</b><p>This is the main or primary part you want to keep. It is always included. Drag the four handles on the PDF to set its exact boundaries.</p></div>
+      <div class="helpStep"><b>4. Main Section — same crop size?</b><p>Turn on <b>Use same crop size for every page</b> when the Main Section has the same position and size on every selected page. Leave it off when pages need different crop positions.</p></div>
+      <div class="helpStep"><b>5. Add the Additional Section</b><p>Turn on <b>Add Additional Section</b> if you also need another part of the page, such as instructions, a lower certificate area, or another document section.</p></div>
+      <div class="helpStep"><b>6. Additional Section — Yes or No</b><p><b>Yes — identical for every page:</b> the same cropped section is taken once and placed on an A4 page, useful when you want to print that section repeatedly.</p><p><b>No — different for pages:</b> each selected page can have its own crop and the resulting sections are produced as individual A5 pages.</p></div>
+      <div class="helpStep"><b>7. Output order</b><p>By default, Main Section pages come first and Additional Section output follows. Turn the option off if you want the reverse order.</p></div>
+      <div class="helpStep"><b>8. Generate & Review</b><p>Generate the PDF, check the preview carefully, then download it if everything looks correct.</p></div>
+      <div class="helpNote"><b>For schools:</b> The tool is useful when admit cards, registration certificates or similar documents are uneven, differently arranged, or unstructured. You can visually select the required sections page-by-page instead of manually editing the original document.</div>
+    </div>
+  </div>
+</div>
 <div id="modal" class="modal" aria-hidden="true"><div class="modalBox"><div class="modalHead"><div><b>Final PDF — Review before download</b><div class="hint" id="modalSub">Generated locally</div></div><button id="closeModal" class="secondary" style="padding:10px 13px">Close</button></div><div class="modalBody"><canvas id="outCanvas"></canvas></div><div class="modalFoot"><div class="row"><button id="outPrev" class="secondary" style="padding:10px 13px">‹ Previous</button><button id="outNext" class="secondary" style="padding:10px 13px">Next ›</button></div><div class="modalInfo" id="outInfo">Page — / —</div><button id="downloadFinal" class="primary">Download PDF</button></div></div></div>
 <script>
 (function(){
 "use strict";
-const $=id=>document.getElementById(id),A5W=595.28,A5H=419.53,DEFAULT_CUT=406,MIN_SPAN=.005;
+const $=id=>document.getElementById(id),A5W=595.28,A5H=419.53,A4W=595.28,A4H=841.89,DEFAULT_CUT=406,MIN_SPAN=.005;
 const state={pdf:null,file:null,bytes:null,libSrc:null,page:1,scale:1,selected:[],outputBlob:null,outputPdf:null,outputPage:1,renderToken:0,busy:false,drag:false,same1:false,same2:false,enable2:false,global1:null,global2:null,byPage:{}};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const pct=v=>Math.round(v*1000)/10;
@@ -228,8 +290,12 @@ function beginCropDrag(e,which,edge){
 async function pageSize(pageNo=state.page){const p=await state.pdf.getPage(pageNo);const v=p.getViewport({scale:1});return {w:v.width,h:v.height}}
 async function render(){if(!state.pdf)return;const token=++state.renderToken;const p=await state.pdf.getPage(state.page),base=p.getViewport({scale:1}),stage=$("stage");state.scale=Math.min(Math.max(260,stage.clientWidth-28)/base.width,Math.max(360,stage.clientHeight-28)/base.height,1.35);const vp=p.getViewport({scale:state.scale}),c=document.createElement('canvas');c.width=Math.ceil(vp.width);c.height=Math.ceil(vp.height);c.style.width=vp.width+'px';c.style.height=vp.height+'px';const wrap=document.createElement('div');wrap.className='paperWrap';wrap.style.position='relative';wrap.appendChild(c);stage.replaceChildren(wrap);$("pageNo").textContent=state.page+' / '+state.pdf.numPages;$("zoomRead").textContent=Math.round(state.scale*100)+'%';loadControls();await p.render({canvasContext:c.getContext('2d',{alpha:false}),viewport:vp}).promise;if(token!==state.renderToken)return;drawOverlays()}
 const MAX_FILE_SIZE=75*1024*1024;const LARGE_FILE_SIZE=50*1024*1024;
-async function loadFile(f){if(!f||(!f.type.includes('pdf')&&!f.name.toLowerCase().endsWith('.pdf')))return alert('Please select a PDF.');if(f.size>MAX_FILE_SIZE){status('PDF rejected: file is larger than 75 MB.');alert('PDF too large.\n\nThis version supports PDFs up to 75 MB.\n\nYour file is '+(f.size/1024/1024).toFixed(1)+' MB.\nPlease compress the PDF and try again.');return false;}if(f.size>LARGE_FILE_SIZE){status('Large PDF detected. Processing may take longer on some devices.');}state.file=f;state.bytes=new Uint8Array(await f.arrayBuffer());state.libSrc=null;$("fileText").textContent=f.name+' • '+(f.size/1024/1024).toFixed(1)+' MB';status(f.size>LARGE_FILE_SIZE?'Large PDF detected. Processing may take longer on some devices. Loading PDF…':'Loading PDF…');try{state.pdf=await pdfjsLib.getDocument({data:state.bytes.slice()}).promise;state.page=1;state.byPage={};state.same1=false;state.same2=false;state.enable2=false;$("pageSelect").value='';selection();const firstPage=await state.pdf.getPage(1),firstVp=firstPage.getViewport({scale:1}),defaultRatio=clamp(DEFAULT_CUT/firstVp.height,0.01,0.99);ensureDefaults(defaultRatio);status('PDF loaded. Main Section crop is ready.',true);await render()}catch(e){console.error(e);status('Could not open this PDF: '+e.message);alert('Could not open this PDF.\n\n'+e.message)}}
+async function loadFile(f){if(!f||(!f.type.includes('pdf')&&!f.name.toLowerCase().endsWith('.pdf')))return alert('Please select a PDF.');if(f.size>MAX_FILE_SIZE){status('PDF rejected: file is larger than 75 MB.');alert('PDF too large.\n\nThis version supports PDFs up to 75 MB.\n\nYour file is '+(f.size/1024/1024).toFixed(1)+' MB.\nPlease compress the PDF and try again.');return false;}if(f.size>LARGE_FILE_SIZE){status('Large PDF detected. Processing may take longer on some devices.');}state.file=f;state.bytes=new Uint8Array(await f.arrayBuffer());state.libSrc=null;$("fileText").textContent=f.name+' • '+(f.size/1024/1024).toFixed(1)+' MB';status(f.size>LARGE_FILE_SIZE?'Large PDF detected. Processing may take longer on some devices. Loading PDF…':'Loading PDF…');try{state.pdf=await pdfjsLib.getDocument({data:state.bytes.slice()}).promise;state.page=1;state.byPage={};state.same1=false;state.same2=false;state.enable2=false;$("pageSelect").value='';selection();const firstPage=await state.pdf.getPage(1),firstVp=firstPage.getViewport({scale:1}),defaultRatio=clamp(DEFAULT_CUT/firstVp.height,0.01,0.99);ensureDefaults(defaultRatio);status('PDF loaded. Crop Box 1 is ready.',true);await render()}catch(e){console.error(e);status('Could not open this PDF: '+e.message);alert('Could not open this PDF.\n\n'+e.message)}}
 function setSame(which,on){if(which===1){state.same1=on;if(on){state.global1=cloneBox(currentBox(1));for(const p of Object.keys(state.byPage))state.byPage[p].b1=cloneBox(state.global1)}}else{state.same2=on;if(on){state.global2=cloneBox(currentBox(2));for(const p of Object.keys(state.byPage))state.byPage[p].b2=cloneBox(state.global2)}}loadControls();drawOverlays()}
+$("learnBtn").onclick=()=>{$("helpModal").classList.add('open');$("helpModal").setAttribute('aria-hidden','false')};
+$("helpClose").onclick=()=>{$("helpModal").classList.remove('open');$("helpModal").setAttribute('aria-hidden','true')};
+$("helpModal").addEventListener('click',e=>{if(e.target===$("helpModal")){$("helpModal").classList.remove('open');$("helpModal").setAttribute('aria-hidden','true')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$("helpModal").classList.contains('open')){$("helpModal").classList.remove('open');$("helpModal").setAttribute('aria-hidden','true')}});
 $("choose").onclick=()=>$('file').click();$("file").onchange=e=>{loadFile(e.target.files[0]).finally(()=>{e.target.value="";});};$("drop").addEventListener('dragover',e=>e.preventDefault());$("drop").addEventListener('drop',e=>{e.preventDefault();loadFile(e.dataTransfer.files[0])});$("pageSelect").oninput=selection;$("allPages").onclick=()=>{$("pageSelect").value='';selection()};$("clearPages").onclick=()=>{$("pageSelect").value='';state.selected=[];$("selectedCount").textContent='0';$("pageStatus").textContent='No pages selected'};
 $("same1").onchange=e=>setSame(1,e.target.checked);$("same2").onchange=e=>setSame(2,e.target.checked);$("enable2").onchange=e=>{state.enable2=e.target.checked;updateLabels();drawOverlays()};
 $("prev").onclick=async()=>{if(state.pdf&&state.page>1){state.page--;await render()}};$("next").onclick=async()=>{if(state.pdf&&state.page<state.pdf.numPages){state.page++;await render()}};window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(()=>state.pdf&&render(),180)});
@@ -305,13 +371,23 @@ async function makeOutput(){
       for(let k=0;k<b2copied.length;k++){
         const pageNo=b2Pages[k],dp=await state.pdf.getPage(pageNo),vp=dp.getViewport({scale:1});
         const boxes=getPageBoxes(pageNo),r2=pdfRectForBox(vp,boxes.b2);
-        const srcW=r2.right-r2.left,srcH=r2.top-r2.bottom,f=fitOnA5(srcW,srcH),pg=b2copied[k];
-        const tx=f.x-f.s*r2.left,ty=f.y-f.s*r2.bottom;
-        pg.scaleContent(f.s,f.s);
+        const srcW=r2.right-r2.left,srcH=r2.top-r2.bottom,pg=b2copied[k];
+        let outW=A5W,outH=A5H,s,tx,ty,cx,cy,cw,ch;
+        if(same2Snapshot){
+          outW=A4W;outH=A4H;
+          s=Math.min(outW/srcW,outH/srcH);
+          cw=srcW*s;ch=srcH*s;cx=(outW-cw)/2;cy=(outH-ch)/2;
+          tx=cx-r2.left*s;ty=cy-r2.bottom*s;
+        }else{
+          const f=fitOnA5(srcW,srcH);
+          s=f.s;tx=f.x-s*r2.left;ty=f.y-s*r2.bottom;
+          cx=f.x;cy=f.y;cw=f.w;ch=f.h;
+        }
+        pg.scaleContent(s,s);
         pg.translateContent(tx,ty);
-        addCropClip(final,pg,f.x,f.y,f.w,f.h);
-        pg.setMediaBox(0,0,A5W,A5H);
-        pg.setCropBox(0,0,A5W,A5H);
+        addCropClip(final,pg,cx,cy,cw,ch);
+        pg.setMediaBox(0,0,outW,outH);
+        pg.setCropBox(0,0,outW,outH);
         if(pg.setRotation)pg.setRotation(degrees(0));
         final.addPage(pg);
       }
@@ -328,7 +404,7 @@ async function makeOutput(){
     state.busy=false;$('export').classList.remove('busy');$('export').disabled=false;
   }
 }
-async function openReview(blob,count,b2Count){state.outputPdf=await pdfjsLib.getDocument({data:new Uint8Array(await blob.arrayBuffer())}).promise;state.outputPage=1;$("modal").classList.add('open');$("modalSub").textContent='Generated locally • A5 landscape • '+state.outputPdf.numPages+' output page(s) • Box 1: '+count+' page(s) • Box 2: '+b2Count+' page(s)';await renderOutput()}
+async function openReview(blob,count,b2Count){state.outputPdf=await pdfjsLib.getDocument({data:new Uint8Array(await blob.arrayBuffer())}).promise;state.outputPage=1;$("modal").classList.add('open');$("modalSub").textContent='Generated locally • Main Section: A5 landscape • '+state.outputPdf.numPages+' output page(s) • Additional Section: '+(b2Count?(same2Snapshot?'1 A4 page':'individual A5 pages'):'not used');await renderOutput()}
 async function renderOutput(){if(!state.outputPdf)return;const p=await state.outputPdf.getPage(state.outputPage),b=$("modal").querySelector('.modalBody'),base=p.getViewport({scale:1}),s=Math.min((b.clientWidth-20)/base.width,(b.clientHeight-20)/base.height,1.5),vp=p.getViewport({scale:s}),c=$("outCanvas");c.width=Math.ceil(vp.width);c.height=Math.ceil(vp.height);await p.render({canvasContext:c.getContext('2d',{alpha:false}),viewport:vp}).promise;$("outInfo").textContent='Page '+state.outputPage+' / '+state.outputPdf.numPages;$("outPrev").disabled=state.outputPage<=1;$("outNext").disabled=state.outputPage>=state.outputPdf.numPages}
 $("export").onclick=async()=>{try{await makeOutput()}catch(e){console.error(e);$("bar").style.width='0%';status('Export failed: '+e.message);alert('Export failed.\n\n'+e.message)}};$("closeModal").onclick=()=>$("modal").classList.remove('open');$("outPrev").onclick=async()=>{if(state.outputPage>1){state.outputPage--;await renderOutput()}};$("outNext").onclick=async()=>{if(state.outputPage<state.outputPdf.numPages){state.outputPage++;await renderOutput()}};$("downloadFinal").onclick=()=>{if(!state.outputBlob)return;const a=document.createElement('a'),u=URL.createObjectURL(state.outputBlob);a.href=u;a.download='Ujjals_PDF_Factory_A5_landscape.pdf';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},4000)};
 })();
